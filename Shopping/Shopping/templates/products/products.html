@@ -1,0 +1,28 @@
+{% extends 'home/base.html' %}
+
+{% block body %}
+
+<div class="row">
+        {% for products in product %}
+        <div class="col-md-6 col-centered">
+           
+                <img src="{{ products.product_image.url }}" style="width: 30%;display:block;margin:0 auto;">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6">
+                        <br>
+                        <p>{{ products.product_title }}  Price : $ {{ products.product_price }} </p>
+                        
+                    </div>
+                    <div class="col-md-6"></div>
+                    <div class="col-md-4">
+                        <a href="{% url 'add_to_cart' %}?products_id={{ products.id }}" class="btn btn-success" role="button">Add to Cart</a>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>    
+                <hr>
+        </div>
+        
+        {% endfor %}
+</div>
+{% endblock %}

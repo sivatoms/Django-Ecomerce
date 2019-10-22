@@ -1,0 +1,85 @@
+{% extends 'home/base.html' %}
+
+{% block body %}
+<script>
+    function call_updater(url, id) {
+        var quantity = document.getElementById(id).value;
+        url = url + "?item_id=" + id + "&quantity=" + quantity;
+        window.open(url, "_self");
+    }
+</script>
+
+{% if cart_items %}
+
+    <div class='row'>
+        <div class="col">
+            <a href="{% url 'productlist' %}" class="btn btn-primary" role="button">Continue Shopping</a>
+            <a href="{% url 'thank_you' %}" class="btn btn-success" role="button">Checkout</a>
+             
+        </div>
+    </div>
+
+ 
+    <div class="row" style="border-bottom: 2px solid #ccc; margin-top: 15px;margin-bottom: 15px;">
+        
+        {% for item in cart_items %}
+
+           
+                        <div class="col-md-2">
+                            <img style="width: 30%;display: block;margin: 0 auto;" src="{{ item.product.product_image.url }}">
+                        </div>
+
+                        <div class="col-md-2" style="text-align: center">
+                            <p>{{ item.product.product_title }} </p>
+                        </div>
+
+                        <div class="col-md-2" style="text-align: center">
+                            Price : $ {{ item.product.product_price }}
+                        </div>
+                        
+                        <div class="col-md-2" style="text-align: center">
+                                <a href="{% url 'remove_item' %}?item_id={{ item.id }}" class="btn btn-danger"
+                                   role="button">Remove</a>
+                        </div>
+                        
+                        <div class="col-md-1">
+    
+                            <input type="text" class="form-control" id="{{ item.id }}" placeholder="quantity"
+                                   value="{{ item.quantity }}">
+    
+                        </div>
+
+                        <div class="col-md-2">
+                            <button class="btn btn-success" onclick="call_updater('/update_item/', {{ item.id }});">Update</button>
+                        </div>
+            
+                        <div class="col-md-1">
+                            $ {% widthratio item.product.product_price 1 item.quantity %}
+                           
+                        </div>
+                        
+
+        {% endfor %}
+    </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-8">
+                </div>
+                <div class="col-md-2">
+                    <span>Total Amount:</span>
+                </div>
+                <div class="col-md-12 text-right">
+                    <span> $ {{ sum }}</span>
+                </div>
+
+            </div>
+
+
+        </div>
+{% else %}
+        <h1>Your Shopping Cart Is Empty.</h1>
+
+{% endif %}
+
+{% endblock %}

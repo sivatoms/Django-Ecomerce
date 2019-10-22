@@ -1,0 +1,84 @@
+{% extends 'home/base.html' %}
+
+{% block body %}
+
+{% load static %}
+
+    <title>{% block title %} {% endblock %}Home</title>
+    <!-- Bootstrap -->
+    <link href='{% static "credit_card.css" %}' rel="stylesheet">
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="credit-card-div">
+                <div class="panel panel-default">
+                    <form method="post" action="/confirm_order/">
+                        {% csrf_token %}
+                        <div class="panel-heading">
+
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <h5 class="text-muted"> Credit Card Number</h5>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <input type="text" class="form-control" placeholder="0000"/>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <input type="text" class="form-control" placeholder="0000"/>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <input type="text" class="form-control" placeholder="0000"/>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <input type="text" class="form-control" placeholder="0000"/>
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <span class="help-block text-muted small-font"> Expiry Month</span>
+                                    <input type="text" class="form-control" placeholder="MM"/>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <span class="help-block text-muted small-font">  Expiry Year</span>
+                                    <input type="text" class="form-control" placeholder="YY"/>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <span class="help-block text-muted small-font">  CCV</span>
+                                    <input type="text" class="form-control" placeholder="CCV"/>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <img src="{% static "credit_card.png" %}"
+                                         class="img-rounded"/>
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-md-12 pad-adjust">
+
+                                    <input type="text" class="form-control" placeholder="Name On The Card"/>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 pad-adjust">
+                                </div>
+                            </div>
+                            <div class="row ">
+                                <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                                    <a href="{% url 'home' %}" class="btn btn-danger" role="button">Cancel</a>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                                    <input type="submit" class="btn btn-warning btn-block" value="PAY NOW"/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'home/base.html' %}
+
+{% block body %}
+
+{% if shopping %}
+<div class="row">
+    <div class="col-md-3">
+        <a href="{% url 'home' %}" class="btn btn-primary" role="button">Continue Shopping</a>
+    </div>
+</div>
+<h3>Thank You so much for shopping with us.</h3>
+<h4>Following are the things, confirmed by you.</h4>
+{% endif %}
+
+<div class="row" style="border-bottom: 5px solid #ccc;">
+{% for item in cart_items %}
+
+    <div class="col-md-12">
+        <div class="col-md-2">
+            <img style="width: 30%;display: block;margin: 0 auto;" src="{{ item.product.product_image.url }}">
+        </div>
+        <div class="col-md-6" style="text-align: center">
+            <p>{{ item.product.product_title }}</p>
+        </div>
+
+        <div class="col-md-2">
+            {{ item.quantity }}
+        </div>
+        <div class="col-md-2">
+            {% widthratio item.product.product_price 1 item.quantity %}
+
+        </div>
+
+    </div>
+    <br>
+{% endfor %}
+
+</div>
+
+        <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-8">
+            </div>
+            <div class="col-md-2">
+                <span>Total Amount:</span>
+            </div>
+            <div class="col-md-2">
+                <span>{{ sum }}</span>
+            </div>
+
+        </div>
+        </div>
+
+{% if not shopping %}
+<div class="row">
+    <div class="col-md-10"></div>
+    <div class="col-md-2">
+        <a href="{% url 'credit_card' %}" class="btn btn-primary" role="button">Confirm</a>
+    </div>
+
+</div>
+{% endif %}
+
+
+{% endblock %}
