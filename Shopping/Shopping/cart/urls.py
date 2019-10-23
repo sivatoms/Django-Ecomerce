@@ -14,5 +14,6 @@ urlpatterns = [
     path('credit_card_page/', views.credit_card_page, name='credit_card'),
     path('add_to_cart/', views.add_to_cart, name="add_to_cart"),
     path('signup/', views.signup, name='signup'),
+    path('order_history/',views.OrderHistory, name='order_history'),
  
 ]

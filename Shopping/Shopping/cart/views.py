@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Product,Item,Cart_Bucket
+from .models import Product,Item,Cart_Bucket, Order_History
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 import random
 import string
+from datetime import datetime
 # Create your views here.
 def home(request):
     return render(request, 'home/home.html')
@@ -34,12 +35,12 @@ def add_to_cart(request):
             login(request, user)
     
     product_id = request.GET.get('products_id')
-    print(product_id)
+    #print(product_id)
     cart = Cart_Bucket.objects.filter(checked_out=False, user=user)
     cart = cart[0] if cart else ''
     if not cart:
         cart = Cart_Bucket.objects.create(user=user)
-    print(user)
+    #print(user)
     newItem = Item()
     newItem.cart = cart
     newItem.product_id = product_id
@@ -59,7 +60,6 @@ def cartlist(request):
         user = ''
     else:
         cart_items = Item.objects.filter(cart__user=user, cart__checked_out=False)
-
         items = cart_items.count() if cart_items else 0
     items_sum = calculate_sum(cart_items)
     return render(request, 'products/cartlist.html', {'user':user, 'items':items, 'page':'cartlist', 'cart_items':cart_items, 'sum':items_sum})
@@ -106,8 +106,23 @@ def confirm_order(request):
     items_sum = calculate_sum(cart_items)
     cart = Cart_Bucket.objects.get(user=user, checked_out=False)
     cart.checked_out = True
+
+     
+    for item in cart_items:
+        OH = Order_History()   
+        OH.user = user
+        OH.order_palced = datetime.now()
+        OH.price = item.product.product_price
+        OH.ordered_product = item.product.product_title
+        OH.save()
+    
+    
+
     cart.save()
-    User.objects.filter(username=user.username).delete()
+    if user.first_name == 'guest':
+        User.objects.filter(username=user.username).delete()
+    
+    
     return render(request, 'products/thankyou.html', {'user':user, 'items':0, 'page':'cartlist', 'cart_items':cart_items, 'sum':items_sum, 'shopping':'Continue Shopping'})
 
 def credit_card_page(request):
@@ -123,3 +138,14 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form':form})
+
+
+def OrderHistory(request):
+    user = request.user
+    ordered_items = ''
+    ordered_items = Order_History.objects.filter(user=user)
+    total = 0
+    for i in ordered_items:
+        total += i.price
+
+    return render(request,'products/order_history.html', {'ordered_items':ordered_items, 'total':total})

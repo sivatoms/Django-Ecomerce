@@ -26,3 +26,16 @@ class Item(models.Model):
 
     def __str__(self):
         return u'%d units' % (self.quantity)
+
+
+class Order_History(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order_palced = models.DateTimeField()
+    ordered_product = models.CharField(max_length=100)
+    price = models.IntegerField()
+
+    def __str__(self):
+        return '{} {} {}'.format(self.order_palced, self.ordered_product, self.price)
+        
+
+

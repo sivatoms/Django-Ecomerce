@@ -1,6 +1,5 @@
 {% extends 'home/base.html' %}
 
 {% block body%}
-<h1>Welcome {{ user.username }}</h1>
-
+<h1>Welcome {% if user.first_name != 'guest' %} {{ user.username }} </h1> {% endif %}
 {% endblock %}
