@@ -1,14 +1,18 @@
 from django.shortcuts import render, redirect
-from .models import Product,Item,Cart_Bucket, Order_History
+from .models import Product,Item,Cart_Bucket, Order_History, Profile
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 import random
 import string
 from datetime import datetime
+from .forms import EditProfileForm
+from django.views.generic import TemplateView
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
 # Create your views here.
 def home(request):
     return render(request, 'home/home.html')
@@ -134,7 +138,7 @@ def signup(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('login')
     else:
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form':form})
@@ -149,3 +153,51 @@ def OrderHistory(request):
         total += i.price
 
     return render(request,'products/order_history.html', {'ordered_items':ordered_items, 'total':total})
+
+@login_required
+def EditProfile(request):
+    args = {}
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            prof = Profile()
+            prf = Profile.objects.get(user_name=request.user)
+            if prf:
+                #prf.user_name = request.user
+                prf.first_name = form.cleaned_data.get('first_name')
+                prf.last_name = form.cleaned_data.get('last_name')
+                prf.email = form.cleaned_data.get('email')
+                prf.phone_number = form.cleaned_data.get('phone_number')
+                prf.date_of_birth = form.cleaned_data.get('date_of_birth')
+                print(form.cleaned_data.get('phone_number'))
+                print(form.cleaned_data.get('date_of_birth'))
+                prf.save()
+            else:
+                prof.user_name = request.user
+                prof.first_name = form.cleaned_data.get('first_name')
+                prof.last_name = form.cleaned_data.get('last_name')
+                prof.email = form.cleaned_data.get('email')
+                prof.phone_number = form.cleaned_data.get('phone_number')
+                prof.date_of_birth = form.cleaned_data.get('date_of_birth')
+                print(form.cleaned_data.get('phone_number'))
+                print(form.cleaned_data.get('date_of_birth'))
+                prof.save()
+            form.save()            
+            return redirect('view_profile')
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {'form':form}
+
+    return render(request, 'home/editprofile.html', args)
+
+@login_required
+def view_profile(request, pk=None):
+    if pk:
+        user = User.objects.get(pk=pk)
+    else:
+        user = request.user
+    
+    profile = Profile.objects.filter(user_name=user)
+    print(profile)
+    args = {'user':user, 'profile':profile}
+    return render(request, 'home/view_profile.html', args)
