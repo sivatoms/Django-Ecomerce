@@ -6,11 +6,11 @@
 
     {% if ordered_items %}
     <div class="row justify-content-center">
-            <h3>Order history</h3>
+            
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                       
+                        <h3 style="text-align: center;">Order history</h3><hr>
                             {% for items in ordered_items %}
                             <div class="row">
                                 <div class="col-md-12">
@@ -36,7 +36,9 @@
                             </div>
                         
     {% else %}
-            <p>No orders in the past </p>
+            <div class="row justify-content-center">
+            <h3>No orders in the past </h3>
+            </div>
     {% endif %}
                 </div>  
             </div>

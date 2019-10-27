@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product,Item,Cart_Bucket, Order_History, Profile
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
@@ -13,6 +13,9 @@ from .forms import EditProfileForm
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings
+import os
 # Create your views here.
 def home(request):
     return render(request, 'home/home.html')
@@ -143,7 +146,7 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form':form})
 
-
+@login_required
 def OrderHistory(request):
     user = request.user
     ordered_items = ''
@@ -156,39 +159,17 @@ def OrderHistory(request):
 
 @login_required
 def EditProfile(request):
-    args = {}
-    if request.method == "POST":
-        form = EditProfileForm(request.POST, instance=request.user)
+    profile = get_object_or_404(Profile.objects.filter(user_name=request.user))
+    if request.method == 'POST':
+        form = EditProfileForm(data=request.POST, instance=profile, files=request.FILES)
+
         if form.is_valid():
-            prof = Profile()
-            prf = Profile.objects.get(user_name=request.user)
-            if prf:
-                #prf.user_name = request.user
-                prf.first_name = form.cleaned_data.get('first_name')
-                prf.last_name = form.cleaned_data.get('last_name')
-                prf.email = form.cleaned_data.get('email')
-                prf.phone_number = form.cleaned_data.get('phone_number')
-                prf.date_of_birth = form.cleaned_data.get('date_of_birth')
-                print(form.cleaned_data.get('phone_number'))
-                print(form.cleaned_data.get('date_of_birth'))
-                prf.save()
-            else:
-                prof.user_name = request.user
-                prof.first_name = form.cleaned_data.get('first_name')
-                prof.last_name = form.cleaned_data.get('last_name')
-                prof.email = form.cleaned_data.get('email')
-                prof.phone_number = form.cleaned_data.get('phone_number')
-                prof.date_of_birth = form.cleaned_data.get('date_of_birth')
-                print(form.cleaned_data.get('phone_number'))
-                print(form.cleaned_data.get('date_of_birth'))
-                prof.save()
-            form.save()            
+            form.save()
             return redirect('view_profile')
     else:
-        form = EditProfileForm(instance=request.user)
+        form = EditProfileForm(instance=profile)
         args = {'form':form}
-
-    return render(request, 'home/editprofile.html', args)
+        return render(request, 'home/editprofile.html', args)
 
 @login_required
 def view_profile(request, pk=None):
@@ -198,6 +179,33 @@ def view_profile(request, pk=None):
         user = request.user
     
     profile = Profile.objects.filter(user_name=user)
-    print(profile)
+    #print(profile)
     args = {'user':user, 'profile':profile}
     return render(request, 'home/view_profile.html', args)
+
+'''
+def profileImage(request):
+    # warning, code might not be safe
+    up_file = request.FILES['image']
+    destination = open('cart/profile_images/' + up_file.name , 'wb+')
+    for chunk in up_file.chunks():
+        destination.write(chunk)
+    destination.close()
+    prf = Profile.objects.get(user_name=request.user)
+    if prf:
+        img = Profile()
+        img.profile_pic.save(up_file.name, File(open('cart/profile_images/' + up_file.name, 'r')))
+        img.save()
+       
+def upload_view(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            result = {'success': True}
+            return HttpResponse(json.dumps(result), mimetype='application/json')
+        else:
+            return HttpResponseBadRequest()
+    else:
+       return HttpResponseNotAllowed(['POST'])
+     '''

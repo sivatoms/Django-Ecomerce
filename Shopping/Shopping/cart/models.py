@@ -2,8 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from phone_field import PhoneField
 from Shopping import settings
-# Create your models here.
-from django.contrib.auth import get_user_model
+
+from django.db.models.signals import post_save
 
 
 class Product(models.Model):
@@ -42,14 +42,19 @@ class Order_History(models.Model):
 
 
 class Profile(models.Model):
-    user_name = models.ForeignKey(User, on_delete=models.CASCADE) #OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    user_name = models.OneToOneField(User,on_delete=models.CASCADE) #models.ForeignKey(User, on_delete=models.CASCADE) #OneToOneField(get_user_model(), on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, verbose_name='first_name',blank=True,null=True)
     last_name = models.CharField(max_length=100,blank=True, null=True)
     email = models.EmailField(blank=True, null=True, default='shiva@junna.com')
     date_of_birth = models.DateTimeField(auto_now=False,null=True, blank=True)
     phone_number = PhoneField(blank=True, help_text='Contact phone number')
+    profile_pic = models.ImageField(upload_to='cart/profile_images/', null=True,blank=True)
 
     def __str__(self):
         return '{} {} {} {} {}'.format(self.first_name, self.last_name, self.email, self.date_of_birth, self.phone_number)
 
+def create_profile(sender, **kwargs):
+    if kwargs['created']:
+        user_profile = Profile.objects.create(user_name=kwargs['instance'])
 
+post_save.connect(create_profile, sender=User)

@@ -5,6 +5,13 @@
     <div class="col-8">
         <div class="card">
             <div class="card-body">
+                    
+                    {% for image in profile %}
+                        {% if image.profile_pic %}
+                            <img src="{{ image.profile_pic.url }}" style="width: 30%;display:block;margin:0 auto;">
+                        {% endif %}
+                    {% endfor %}
+                  
                 <h3 style="text-align: center;">Profile</h3>
                    <hr>
 
@@ -18,12 +25,13 @@
                                             <p>{{ user.username }}</p>
                                         </div>
                                     </div>
+                                    {% for p in profile %}
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label>First name</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p>{{ user.first_name }}</p>
+                                            <p>{{ p.first_name }}</p>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -31,7 +39,7 @@
                                             <label>Last name</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p>{{ user.last_name }}</p>
+                                            <p>{{ p.last_name }}</p>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -39,10 +47,10 @@
                                             <label>Email</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p>{{ user.email }}</p>
+                                            <p>{{ p.email }}</p>
                                         </div>
                                     </div>
-                                    {% for p in profile %}
+                                    
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label>Phone</label>
@@ -56,17 +64,23 @@
                                             <label>Date of birth</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p>{{ p.date_of_birth }}</p>
+                                            <p>{{ p.date_of_birth|date:'Y-m-d' }}</p>
                                         </div>
                                     </div>
                                     {% endfor %}
                             </div>
                         </div>
-
-                        <a href="{% url 'editprofile' %}" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-edit"> Edit profile
-                            </span>
-                        </a>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="text-center">
+                                        <a href="{% url 'editprofile' %}" class="btn btn-primary">
+                                            <span class="glyphicon glyphicon-edit"> Edit profile
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        
                     </div>
                 </div>
             </div>  
